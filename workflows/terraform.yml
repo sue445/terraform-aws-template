@@ -1,0 +1,99 @@
+name: terraform
+
+env:
+  # c.f. https://github.com/hashicorp/terraform/blob/main/CHANGELOG.md
+  TERRAFORM_VERSION: 0.15.4 # Edit here
+
+  # c.f. https://github.com/mercari/tfnotify/releases
+  TFNOTIFY_VERSION: 0.7.0 # Edit here
+
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - "**.md"
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+    paths-ignore:
+      - "**.md"
+  workflow_dispatch:
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    concurrency: terraform-tfstate
+
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+
+      - uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: ${{ env.TERRAFORM_VERSION }}
+
+      - name: Setup tfnotify
+        run: |
+          wget https://github.com/mercari/tfnotify/releases/download/v${TFNOTIFY_VERSION}/tfnotify_linux_amd64.tar.gz -O tfnotify_${TFNOTIFY_VERSION}_linux_amd64.tar.gz
+          tar zxf tfnotify_${TFNOTIFY_VERSION}_linux_amd64.tar.gz
+          sudo mv tfnotify /usr/local/bin/tfnotify
+        working-directory: /tmp
+
+      - run: terraform init -input=false
+
+      - name: terraform fmt
+        run: |
+          set +e
+          terraform fmt -recursive -check
+          ret=$?
+          set -e
+
+          if [ $ret -ne 0 ]; then
+            echo '[ERROR] Run `terraform fmt -recursive` or fix followings'
+            terraform fmt -recursive
+            git --no-pager diff
+          fi
+          exit $ret
+
+      - name: tflint
+        uses: reviewdog/action-tflint@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: terraform plan
+        run: |
+          # NOTE: tfnotify uses GITHUB_SHA, but GITHUB_SHA can't be override in env
+          if [ -n "$PR_HEAD_SHA" ]; then
+            export GITHUB_SHA=$PR_HEAD_SHA
+          fi
+
+          terraform plan -input=false | tfnotify plan
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+
+      - name: terraform apply (main push, manually running)
+        run: |
+          terraform apply -input=false -auto-approve | tfnotify apply
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+
+      - name: Slack Notification
+        uses: lazy-actions/slatify@master
+        if: always()
+        continue-on-error: true
+        with:
+          job_name: terraform
+          type: ${{ job.status }}
+          icon_emoji: ":octocat:"
+          url: ${{ secrets.SLACK_WEBHOOK }}
+          token: ${{ secrets.GITHUB_TOKEN }}

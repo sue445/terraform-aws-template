@@ -1,0 +1,51 @@
+---
+ci: github-actions
+notifier:
+  github:
+    token: $GITHUB_TOKEN
+    repository:
+      owner: "REPO_OWNER" # TODO: edit here
+      name: "REPO_NAME" # TODO: edit here
+terraform:
+  fmt:
+    template: |
+      {{ .Title }}
+
+      {{ .Message }}
+
+      {{ .Result }}
+
+      {{ .Body }}
+  plan:
+    template: |
+      {{ .Title }} <sup>[CI link]( {{ .Link }} )</sup>
+      {{ .Message }}
+      {{if .Result}}
+      <pre><code>{{ .Result }}
+      </pre></code>
+      {{end}}
+      <details><summary>Details (Click me)</summary>
+
+      <pre><code>{{ .Body }}
+      </pre></code></details>
+  apply:
+    template: |
+      {{ .Title }}
+      {{ .Message }}
+      {{if .Result}}
+      <pre><code>{{ .Result }}
+      </pre></code>
+      {{end}}
+      <details><summary>Details (Click me)</summary>
+
+      <pre><code>{{ .Body }}
+      </pre></code></details>
+
+    when_add_or_update_only:
+      label: "add-or-update"
+    when_destroy:
+      label: "destroy"
+    when_no_changes:
+      label: "no-changes"
+    when_plan_error:
+      label: "error"
