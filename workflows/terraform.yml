@@ -2,7 +2,7 @@ name: terraform
 
 env:
   # c.f. https://github.com/hashicorp/terraform/blob/main/CHANGELOG.md
-  TERRAFORM_VERSION: 0.15.4 # Edit here
+  TERRAFORM_VERSION: 1.0.1 # Edit here
 
   # c.f. https://github.com/mercari/tfnotify/releases
   TFNOTIFY_VERSION: 0.7.0 # Edit here
