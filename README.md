@@ -98,13 +98,13 @@ git push
 ## Maintenance for Terraform repository
 ### Upgrade Terraform core
 1. Check latest version
-  * https://github.com/hashicorp/terraform/blob/main/CHANGELOG.md
+    * https://github.com/hashicorp/terraform/blob/main/CHANGELOG.md
 2. Edit `TERRAFORM_VERSION` in [.github/workflows/terraform.yml](.github/workflows/terraform.yml)
 3. Edit [.terraform-version](.terraform-version)
 4. Run `tfenv install`
 
 ### Upgrade Terraform providers
 1. Check latest versions
-  * https://github.com/terraform-providers/terraform-provider-aws/blob/master/CHANGELOG.md
+    * https://github.com/terraform-providers/terraform-provider-aws/blob/master/CHANGELOG.md
 2. Edit `terraform.required_providers.aws.version` in [versions.tf](versions.tf)
 3. Run `terraform init -upgrade`
