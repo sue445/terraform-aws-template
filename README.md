@@ -4,7 +4,7 @@
 ## Features
 * Run `terraform apply` (push to main branch or [manually running](https://docs.github.com/en/free-pro-team@latest/actions/managing-workflow-runs/manually-running-a-workflow))
 * Run `terraform plan` (except main branch)
-* Comment the result of Terraform to PullRequest using [tfnotify](https://github.com/mercari/tfnotify)
+* Comment the result of Terraform to PullRequest
 * Run [`tflint`](https://github.com/terraform-linters/tflint)
 * Slack notification
 
@@ -19,8 +19,8 @@ https://console.aws.amazon.com/iam/home
 
 The minimum required IAM roles are followings
 
-* AmazonS3FullAccess
-* AmazonDynamoDBFullAccess
+* `AmazonS3FullAccess`
+* `AmazonDynamoDBFullAccess`
 
 Finally, store `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
 
@@ -35,7 +35,6 @@ Finally, store `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
 Edit followings
 
 * `TERRAFORM_VERSION`
-* `TFNOTIFY_VERSION`
 
 #### [.terraform-version](.terraform-version)
 * Upgrade to the latest version if necessary
@@ -55,12 +54,6 @@ Edit followings
 
 * `terraform.backend.bucket`
     * Same to `backend_bucket_name` of [account.tf](account.tf)
-
-#### [tfnotify.yml](tfnotify.yml)
-Edit followings
-
-* `notifier.github.repository.owner`
-* `notifier.github.repository.name`
 
 #### [versions.tf](versions.tf)
 Upgrade to the latest version if necessary
@@ -101,3 +94,17 @@ git push
 ```
 
 ### 8. Check if GitHub Actions build is executed
+
+## Maintenance for Terraform repository
+### Upgrade Terraform core
+1. Check latest version
+  * https://github.com/hashicorp/terraform/blob/main/CHANGELOG.md
+2. Edit `TERRAFORM_VERSION` in [.github/workflows/terraform.yml](.github/workflows/terraform.yml)
+3. Edit [.terraform-version](.terraform-version)
+4. Run `tfenv install`
+
+### Upgrade Terraform providers
+1. Check latest versions
+  * https://github.com/terraform-providers/terraform-provider-aws/blob/master/CHANGELOG.md
+2. Edit `terraform.required_providers.aws.version` in [versions.tf](versions.tf)
+3. Run `terraform init -upgrade`
