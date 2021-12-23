@@ -4,7 +4,7 @@ terraform {
       source = "hashicorp/aws"
 
       # c.f. https://github.com/terraform-providers/terraform-provider-aws/blob/master/CHANGELOG.md
-      version = "3.25.0"
+      version = "3.70.0"
     }
   }
   required_version = ">= 1.0" # Edit here
