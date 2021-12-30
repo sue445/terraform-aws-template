@@ -1,0 +1,130 @@
+AWSTemplateFormatVersion: 2010-09-09
+
+Parameters:
+  BackendBucketName:
+    Description: |
+      Name of backend bucket. 
+      c.f. https://www.terraform.io/language/settings/backends/s3
+    Type: String
+
+  TerraformLockTableName:
+    Description: |
+      Name of lock table name for terraform.
+      c.f. https://www.terraform.io/language/settings/backends/s3
+    Type: String
+    Default: terraform-lock
+
+  GithubOidcRoleName:
+    Description: IAM Role name for OIDC authentication
+    Type: String
+    Default: github-oidc-role
+
+  # c.f. https://github.com/aws-actions/configure-aws-credentials#sample-iam-role-cloudformation-template
+  GitHubOrgName:
+    Type: String
+    Description: GitHub organization or user name (e.g. octocat)
+  GitHubRepositoryName:
+    Type: String
+    Description: GitHub repository name (e.g. Hello-World)
+  OIDCProviderArn:
+    Description: |
+      Arn for the GitHub OIDC Provider.
+      A new provider will be created if omitted
+    Default: ""
+    Type: String
+
+Conditions:
+  CreateOIDCProvider: !Equals
+    - !Ref OIDCProviderArn
+    - ""
+
+Resources:
+  BackendBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub ${BackendBucketName}
+      AccessControl: Private
+      VersioningConfiguration:
+        Status: Enabled
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  TerraformLockTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub ${TerraformLockTableName}
+      ProvisionedThroughput:
+        ReadCapacityUnits: 5
+        WriteCapacityUnits: 5
+      KeySchema:
+        - AttributeName: LockID
+          KeyType: HASH
+      AttributeDefinitions:
+        - AttributeName: LockID
+          AttributeType: S
+
+  # c.f. https://github.com/aws-actions/configure-aws-credentials#sample-iam-role-cloudformation-template
+  GithubOidcRole:
+    Type: AWS::IAM::Role
+    Properties:
+      RoleName: !Sub ${GithubOidcRoleName}
+      Description: !Sub IAM role for authentication of https://github.com/${GitHubOrgName}/${GitHubRepositoryName}
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Action: sts:AssumeRoleWithWebIdentity
+            Principal:
+              Federated: !If
+                - CreateOIDCProvider
+                - !Ref GithubOidcProvider
+                - !Ref OIDCProviderArn
+            Condition:
+              StringLike:
+                token.actions.githubusercontent.com:sub: !Sub repo:${GitHubOrgName}/${GitHubRepositoryName}:*
+      Policies:
+        - PolicyName: terraform
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - s3:ListBucket
+                  - s3:Get*
+                Resource: !GetAtt BackendBucket.Arn
+              - Effect: Allow
+                Action:
+                  - s3:GetObject
+                  - s3:PutObject
+                  - s3:DeleteObject
+                Resource:
+                  - !Join
+                    - "/"
+                    - - !GetAtt BackendBucket.Arn
+                      - "terraform.tfstate"
+              - Effect: Allow
+                Action:
+                  - dynamodb:GetItem
+                  - dynamodb:PutItem
+                  - dynamodb:DeleteItem
+                  - dynamodb:DescribeTable
+                  - dynamodb:DescribeContinuousBackups
+                  - dynamodb:DescribeTimeToLive
+                  - dynamodb:ListTagsOfResource
+                Resource: !GetAtt TerraformLockTable.Arn
+
+  GithubOidcProvider:
+    Type: AWS::IAM::OIDCProvider
+    Condition: CreateOIDCProvider
+    Properties:
+      Url: https://token.actions.githubusercontent.com
+      ClientIdList:
+        - sts.amazonaws.com
+      ThumbprintList:
+        - a031c46782e6e6c662c2c87c76da9aa62ccabd8e
+
+Outputs:
+  GithubOidcProviderRole:
+    Value: !GetAtt GithubOidcRole.Arn
