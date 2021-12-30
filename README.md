@@ -1,59 +1,85 @@
 # terraform-aws-template
-[Terraform](https://www.terraform.io/) template for AWS
+[Terraform](https://www.terraform.io/) template for [AWS](https://aws.amazon.com/)
 
-## Features
-* Run `terraform apply` (push to main branch or [manually running](https://docs.github.com/en/free-pro-team@latest/actions/managing-workflow-runs/manually-running-a-workflow))
-* Run `terraform plan` (except main branch)
-* Comment the result of Terraform to PullRequest
-* Run [`tflint`](https://github.com/terraform-linters/tflint)
+## [Workflow](.github/workflows/terraform.yml) features
+* Authenticating via [GitHub OIDC provider](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services)
+* Run `terraform apply`
+    * Automatically running on `main` branch
+    * Manual running on any branch
+* Run `terraform plan`, `terraform fmt` and [tflint](https://github.com/terraform-linters/tflint)
+* Comment the result of `terraform plan` to PullRequest
 * Slack notification
 
 ## Requirements
 * GitHub Actions
-* Terraform v0.15+
+* Terraform v1.0+
 
 ## Usage of this template
-### 1. Create a repository using this template
-### 2. Create a IAM User for Terraform
-https://console.aws.amazon.com/iam/home
+### 1. Install tools
+* [tfenv](https://github.com/tfutils/tfenv)
 
-The minimum required IAM roles are followings
+### 2. Create a repository using this template
 
-* `AmazonS3FullAccess`
-* `AmazonDynamoDBFullAccess`
+### 3. Setup terraform with CloudFormation
+1. Download [cloud_formation/setup-terraform.yml](cloud_formation/setup-terraform.yml)
+2. Go to [CloudFormation](https://console.aws.amazon.com/console/home)
+3. Create stack with [cloud_formation/setup-terraform.yml](cloud_formation/setup-terraform.yml)
 
-Finally, store `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`
+#### Parameters
+* `BackendBucketName` **(Required)**
+  * Name of backend bucket. 
+  * c.f. https://www.terraform.io/language/settings/backends/s3
+* `TerraformLockTableName` **(Required)**
+  * Name of lock table name for terraform. 
+  * c.f. https://www.terraform.io/language/settings/backends/s3
+  * default: `terraform-lock`
+* `GithubOidcRoleName` **(Required)**
+  * IAM Role name for OIDC authentication
+  * default: `github-oidc-role`
+* `GitHubOrgName` **(Required)**
+  * GitHub organization or user name (e.g. `octocat`)
+* `GitHubRepositoryName` **(Required)**
+  * GitHub repository name (e.g. `Hello-World`)
+* `OIDCProviderArn` (optional)
+  * Arn for the GitHub OIDC Provider.
+  * A new provider will be created if omitted
 
-### 3. Register secrets
-* `AWS_ACCESS_KEY_ID` **(required)**
-* `AWS_SECRET_ACCESS_KEY` **(required)**
+### 4. Register secrets
 * `SLACK_WEBHOOK` (optional)
     * Create from https://slack.com/apps/A0F7XDUAZ
 
-### 4. Edit files
+### 5. Edit files
 #### [.github/workflows/terraform.yml](.github/workflows/terraform.yml)
 Edit followings
 
 * `TERRAFORM_VERSION`
+  * Upgrade to the latest version if necessary
+* `GITHUB_OIDC_PROVIDER_ROLE`
+  * This is crated by [cloud_formation/setup-terraform.yml](cloud_formation/setup-terraform.yml). See CloudFormation stack output
+* `AWS_REGION`
+  * Same to the region where Cloudformation was executed
 
 #### [.terraform-version](.terraform-version)
 * Upgrade to the latest version if necessary
 * Same to `TERRAFORM_VERSION` of [.github/workflows/terraform.yml](.github/workflows/terraform.yml)
 
-#### [account.tf](account.tf)
-Edit followings
-
-* `aws_account_id`
-* `provider_region`
-* `backend_bucket_location`
-* `backend_bucket_name`
-* `terraform_username`
-
 #### [backend.tf](backend.tf)
 Edit followings
 
 * `terraform.backend.bucket`
-    * Same to `backend_bucket_name` of [account.tf](account.tf)
+  * Same to `BackendBucketName` of [cloud_formation/setup-terraform.yml](cloud_formation/setup-terraform.yml) parameter
+* `terraform.backend.region`
+  * Same to the region where Cloudformation was executed
+* `terraform.backend.dynamodb_table`
+  * Same to `TerraformLockTableName` of [cloud_formation/setup-terraform.yml](cloud_formation/setup-terraform.yml) parameter
+
+#### [terraform.tfvars](terraform.tfvars)
+Edit followings
+
+* `aws_account_id`
+  * AWS account ID
+* `provider_region`
+  * Same to the region where Cloudformation was executed
 
 #### [versions.tf](versions.tf)
 Upgrade to the latest version if necessary
@@ -61,39 +87,18 @@ Upgrade to the latest version if necessary
 * `terraform.required_providers.aws.version`
 * `terraform.required_version`
 
-### 5. Create S3 bucket for Terraform backend
-https://s3.console.aws.amazon.com/s3/home
-
-* Same to `backend_bucket_name` and `backend_bucket_location` of [account.tf](account.tf)
-
-### 6. Install tools
-* [direnv](https://github.com/direnv/direnv)
-* [tfenv](https://github.com/tfutils/tfenv)
-
-### 7. Run Terraform from local
+### 6. Run Terraform from local
 ```bash
-cp .envrc.example .envrc
-vi .envrc
-
-direnv allow
 tfenv install
 
 terraform init -upgrade
 git add .terraform.lock.hcl
 git commit -m "terraform init -upgrade"
 
-terraform import aws_s3_bucket.backend __BACKEND_BUCKET_NAME__
-
-terraform plan -lock=false
-terraform apply -lock=false
-
-terraform plan
-terraform apply
-
 git push
 ```
 
-### 8. Check if GitHub Actions build is executed
+### 7. Check if GitHub Actions build is executed
 
 ## Maintenance for Terraform repository
 ### Upgrade Terraform core
