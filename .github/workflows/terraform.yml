@@ -2,10 +2,16 @@ name: terraform
 
 env:
   # c.f. https://github.com/hashicorp/terraform/blob/main/CHANGELOG.md
-  TERRAFORM_VERSION: 1.1.2 # Edit here
+  TERRAFORM_VERSION: 1.1.2 # TODO: Edit here
 
-  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+  GITHUB_OIDC_PROVIDER_ROLE: arn:aws:iam::0000000000000:role/github-oidc-role # TODO: Edit here
+  AWS_REGION: "REGION_OF_CLOUD_FORMATION" # TODO: Edit here
+
+permissions:
+  contents: read
+  id-token: write
+  issues: write
+  pull-requests: write
 
 on:
   push:
@@ -30,6 +36,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ env.GITHUB_OIDC_PROVIDER_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
 
       - uses: hashicorp/setup-terraform@v1
         with:
@@ -59,7 +71,6 @@ jobs:
       - name: terraform plan
         id: plan
         run: terraform plan -input=false -no-color
-        continue-on-error: true
 
       - uses: actions/github-script@0.9.0
         if: github.event_name == 'pull_request'
@@ -68,6 +79,7 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
+            const ci_url = "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}";
             const output = `#### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
 
             <details><summary>Show Plan</summary>
@@ -78,7 +90,7 @@ jobs:
 
             </details>
 
-            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Working Directory: \`${{ env.tf_actions_working_dir }}\`, Workflow: \`${{ github.workflow }}\`*`;
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: [\`${{ github.workflow }}\`](${ ci_url })*`;
 
             github.issues.createComment({
               issue_number: context.issue.number,
