@@ -23,7 +23,7 @@
 ### 3. Setup terraform with CloudFormation
 1. Download [cloud_formation/setup-terraform.yml](cloud_formation/setup-terraform.yml)
 2. Go to [CloudFormation](https://console.aws.amazon.com/console/home)
-3. Create stack with [cloud_formation/setup-terraform.yml](cloud_formation/setup-terraform.yml)
+3. Create stack with downloaded `setup-terraform.yml`
 
 #### Parameters
 * `BackendBucketName` **(Required)**
