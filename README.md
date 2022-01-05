@@ -113,3 +113,6 @@ git push
     * https://github.com/terraform-providers/terraform-provider-aws/blob/master/CHANGELOG.md
 2. Edit `terraform.required_providers.aws.version` in [versions.tf](versions.tf)
 3. Run `terraform init -upgrade`
+
+## Other solution
+* https://github.com/sue445/terraform-gcp-template
