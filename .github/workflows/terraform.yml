@@ -72,7 +72,8 @@ jobs:
         id: plan
         run: terraform plan -input=false -no-color
 
-      - uses: actions/github-script@0.9.0
+      - name: Post terraform plan report to PullRequest comment
+        uses: actions/github-script@v6
         if: github.event_name == 'pull_request'
         env:
           PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
@@ -92,12 +93,37 @@ jobs:
 
             *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: [\`${{ github.workflow }}\`](${ ci_url })*`;
 
-            github.issues.createComment({
+            github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
               body: output
             })
+
+      - name: Post terraform plan report to Job Summaries
+        uses: actions/github-script@v6
+        env:
+          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const ci_url = "https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}";
+            const output = `#### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+
+            <details><summary>Show Plan</summary>
+
+            \`\`\`\n
+            ${process.env.PLAN}
+            \`\`\`
+
+            </details>
+
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: [\`${{ github.workflow }}\`](${ ci_url })*`;
+
+            await core.summary
+              .addHeading('Terraform plan report')
+              .addRaw("\n" + output)
+              .write()
 
       - name: terraform apply (main push, manually running)
         run: |
