@@ -7,7 +7,7 @@
     * Automatically running on `main` branch
     * Manual running on any branch
 * Run `terraform plan`, `terraform fmt` and [tflint](https://github.com/terraform-linters/tflint)
-* Comment the result of `terraform plan` to PullRequest
+* Post `terraform plan` report to PullRequest comment and Job Summaries
 * Slack notification
 
 ## Requirements
