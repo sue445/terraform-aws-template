@@ -2,7 +2,7 @@ name: terraform
 
 env:
   # c.f. https://github.com/hashicorp/terraform/blob/main/CHANGELOG.md
-  TERRAFORM_VERSION: 1.1.2 # TODO: Edit here
+  TERRAFORM_VERSION: 1.2.6 # TODO: Edit here
 
   GITHUB_OIDC_PROVIDER_ROLE: arn:aws:iam::0000000000000:role/github-oidc-role # TODO: Edit here
   AWS_REGION: "REGION_OF_CLOUD_FORMATION" # TODO: Edit here
