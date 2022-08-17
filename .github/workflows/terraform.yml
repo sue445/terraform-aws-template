@@ -35,7 +35,7 @@ jobs:
     concurrency: terraform-tfstate
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -43,7 +43,7 @@ jobs:
           role-to-assume: ${{ env.GITHUB_OIDC_PROVIDER_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
 
-      - uses: hashicorp/setup-terraform@v1
+      - uses: hashicorp/setup-terraform@v2
         with:
           terraform_version: ${{ env.TERRAFORM_VERSION }}
 
