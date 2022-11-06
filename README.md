@@ -107,9 +107,8 @@ git push
 ### Upgrade Terraform core
 1. Check latest version
     * https://github.com/hashicorp/terraform/blob/main/CHANGELOG.md
-2. Edit `TERRAFORM_VERSION` in [.github/workflows/terraform.yml](.github/workflows/terraform.yml)
-3. Edit [.terraform-version](.terraform-version)
-4. Run `tfenv install`
+2. Edit [.terraform-version](.terraform-version)
+3. Run `tfenv install`
 
 ### Upgrade Terraform providers (automatically)
 1. Edit [.github/dependabot.yml](.github/dependabot.yml)
