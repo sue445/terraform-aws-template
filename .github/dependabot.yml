@@ -2,6 +2,14 @@
 version: 2
 
 updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      # day: "sunday"
+      # time: "0:00"
+      # timezone: Asia/Tokyo
+
   - package-ecosystem: terraform
     directory: /
     schedule:
