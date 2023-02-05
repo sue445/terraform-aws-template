@@ -30,6 +30,7 @@ jobs:
     runs-on: ubuntu-latest
 
     concurrency: terraform-tfstate
+    environment: ${{ ((github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch') && 'terraform-apply') || '' }}
 
     steps:
       - uses: actions/checkout@v3
