@@ -52,8 +52,6 @@
 #### [.github/workflows/terraform.yml](.github/workflows/terraform.yml)
 Edit followings
 
-* `TERRAFORM_VERSION`
-  * Upgrade to the latest version if necessary
 * `GITHUB_OIDC_PROVIDER_ROLE`
   * This is crated by [cloud_formation/setup-terraform.yml](cloud_formation/setup-terraform.yml). See CloudFormation stack output
 * `AWS_REGION`
@@ -61,7 +59,6 @@ Edit followings
 
 #### [.terraform-version](.terraform-version)
 * Upgrade to the latest version if necessary
-* Same to `TERRAFORM_VERSION` of [.github/workflows/terraform.yml](.github/workflows/terraform.yml)
 
 #### [backend.tf](backend.tf)
 Edit followings
