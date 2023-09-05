@@ -137,12 +137,9 @@ jobs:
         if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
 
       - name: Slack Notification
-        uses: lazy-actions/slatify@master
+        uses: act10ns/slack@v2
         if: always()
         continue-on-error: true
         with:
-          job_name: terraform
-          type: ${{ job.status }}
-          icon_emoji: ":octocat:"
-          url: ${{ secrets.SLACK_WEBHOOK }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+          status: ${{ job.status }}
+          webhook-url: ${{ secrets.SLACK_WEBHOOK }}
