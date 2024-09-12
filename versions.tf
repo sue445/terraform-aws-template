@@ -3,7 +3,7 @@ terraform {
     aws = {
       source = "hashicorp/aws"
 
-      # c.f. https://github.com/terraform-providers/terraform-provider-aws/blob/master/CHANGELOG.md
+      # c.f. https://github.com/terraform-providers/terraform-provider-aws/blob/main/CHANGELOG.md
       version = "5.58.0"
     }
   }
