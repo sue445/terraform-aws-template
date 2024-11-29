@@ -104,6 +104,10 @@ Resources:
                     - "/"
                     - - !GetAtt BackendBucket.Arn
                       - "terraform.tfstate"
+                  - !Join
+                    - "/"
+                    - - !GetAtt BackendBucket.Arn
+                      - "terraform.tfstate.tflock"
               - Effect: Allow
                 Action:
                   - dynamodb:GetItem
