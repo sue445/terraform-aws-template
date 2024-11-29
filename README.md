@@ -1,6 +1,11 @@
 # terraform-aws-template
 [Terraform](https://www.terraform.io/) template for [AWS](https://aws.amazon.com/)
 
+## :information_desk_person: Migrate to S3-native state locking
+> [!NOTE]
+> If you want to migrate from DynamoDB state locking to S3-native state locking,
+> read [this migration guide](MIGRATE_TO_S3_NATIVE_STATE_LOCKNG.md)
+
 ## [Workflow](.github/workflows/terraform.yml) features
 * Authenticating via [GitHub OIDC provider](https://docs.github.com/en/actions/deployment/security-hardening-your-deployments/configuring-openid-connect-in-amazon-web-services)
 * Run `terraform apply`

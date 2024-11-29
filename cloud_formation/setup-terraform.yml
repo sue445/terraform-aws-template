@@ -7,13 +7,6 @@ Parameters:
       c.f. https://www.terraform.io/language/settings/backends/s3
     Type: String
 
-  TerraformLockTableName:
-    Description: |
-      Name of lock table name for terraform.
-      c.f. https://www.terraform.io/language/settings/backends/s3
-    Type: String
-    Default: terraform-lock
-
   GithubOidcRoleName:
     Description: IAM Role name for OIDC authentication
     Type: String
@@ -51,20 +44,6 @@ Resources:
         BlockPublicPolicy: true
         IgnorePublicAcls: true
         RestrictPublicBuckets: true
-
-  TerraformLockTable:
-    Type: AWS::DynamoDB::Table
-    Properties:
-      TableName: !Sub ${TerraformLockTableName}
-      ProvisionedThroughput:
-        ReadCapacityUnits: 5
-        WriteCapacityUnits: 5
-      KeySchema:
-        - AttributeName: LockID
-          KeyType: HASH
-      AttributeDefinitions:
-        - AttributeName: LockID
-          AttributeType: S
 
   # c.f. https://github.com/aws-actions/configure-aws-credentials#sample-iam-role-cloudformation-template
   GithubOidcRole:
@@ -104,16 +83,10 @@ Resources:
                     - "/"
                     - - !GetAtt BackendBucket.Arn
                       - "terraform.tfstate"
-              - Effect: Allow
-                Action:
-                  - dynamodb:GetItem
-                  - dynamodb:PutItem
-                  - dynamodb:DeleteItem
-                  - dynamodb:DescribeTable
-                  - dynamodb:DescribeContinuousBackups
-                  - dynamodb:DescribeTimeToLive
-                  - dynamodb:ListTagsOfResource
-                Resource: !GetAtt TerraformLockTable.Arn
+                  - !Join
+                    - "/"
+                    - - !GetAtt BackendBucket.Arn
+                      - "terraform.tfstate.tflock"
 
   GithubOidcProvider:
     Type: AWS::IAM::OIDCProvider
