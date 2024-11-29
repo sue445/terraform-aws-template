@@ -17,7 +17,7 @@
 
 ## Requirements
 * GitHub Actions
-* Terraform v1.0+
+* Terraform v1.10+
 
 ## Usage of this template
 ### 1. Install tools
