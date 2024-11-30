@@ -12,13 +12,10 @@ Use `use_lockfile` instead of `dynamodb_table`
  terraform {
    backend "s3" {
      # NOTE: variables(var and local) are not allowed here
--    bucket         = "" # TODO: edit here
--    key            = "terraform.tfstate"
--    region         = "" # TODO: edit here
+     bucket         = "" # TODO: edit here
+     key            = "terraform.tfstate"
+     region         = "" # TODO: edit here
 -    dynamodb_table = "terraform-lock" # TODO: edit here
-+    bucket       = "" # TODO: edit here
-+    key          = "terraform.tfstate"
-+    region       = "" # TODO: edit here
 +    use_lockfile = true
    }
  }
