@@ -6,7 +6,7 @@ c.f. https://github.com/hashicorp/terraform/pull/35661
 This document explains how to migrate if you have been using DynamoDB state locking since before Terraform 1.9.
 
 ## 1. Edit [`backend.tf`](backend.tf)
-Use `use_lockfile` instead of `dynamodb_table`
+Use [`use_lockfile`](https://developer.hashicorp.com/terraform/language/backend/s3#use_lockfile) instead of [`dynamodb_table`](https://developer.hashicorp.com/terraform/language/backend/s3#dynamodb_table)
 
 ```diff
  terraform {
