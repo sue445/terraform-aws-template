@@ -72,8 +72,6 @@ Edit followings
   * Same to `BackendBucketName` of [cloud_formation/setup-terraform.yml](cloud_formation/setup-terraform.yml) parameter
 * `terraform.backend.region`
   * Same to the region where Cloudformation was executed
-* `terraform.backend.dynamodb_table`
-  * Same to `TerraformLockTableName` of [cloud_formation/setup-terraform.yml](cloud_formation/setup-terraform.yml) parameter
 
 #### [terraform.tfvars](terraform.tfvars)
 Edit followings
