@@ -33,7 +33,7 @@ jobs:
     environment: ${{ ((github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch') && 'terraform-apply') || '' }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           # Make `fetch-depth` larger because the default value(1) causes `git merge-base --is-ancestor origin/main` to fail.
           fetch-depth: 100
