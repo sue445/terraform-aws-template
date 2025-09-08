@@ -39,7 +39,7 @@ jobs:
           fetch-depth: 100
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v5
         with:
           role-to-assume: ${{ env.GITHUB_OIDC_PROVIDER_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
