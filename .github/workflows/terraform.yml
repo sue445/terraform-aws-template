@@ -80,7 +80,7 @@ jobs:
         run: terraform plan -input=false -no-color
 
       - name: Post terraform plan report to PullRequest comment
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         if: github.event_name == 'pull_request'
         env:
           PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
@@ -108,7 +108,7 @@ jobs:
             })
 
       - name: Post terraform plan report to Job Summaries
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         env:
           PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
         with:
