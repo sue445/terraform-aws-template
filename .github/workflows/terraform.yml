@@ -154,7 +154,7 @@ jobs:
         if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
 
       - name: Slack Notification
-        uses: act10ns/slack@cfcc30955fe9377f4f55e1079e5419ee1014269f # v2
+        uses: act10ns/slack@44541246747a30eb3102d87f7a4cc5471b0ffb7d # v2.1.0
         if: always()
         continue-on-error: true
         with:
