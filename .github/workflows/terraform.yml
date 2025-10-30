@@ -71,7 +71,7 @@ jobs:
           exit $ret
 
       - name: tflint
-        uses: reviewdog/action-tflint@master
+        uses: reviewdog/action-tflint@v1.25.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
 
