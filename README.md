@@ -120,5 +120,12 @@ git push
 2. Edit `terraform.required_providers.aws.version` in [versions.tf](versions.tf)
 3. Run `terraform init -upgrade`
 
+### Upgrade tflint plugins (automatically)
+To automatically upgrade tflint plugins, [renovate](https://docs.renovatebot.com/) is required.
+
+Please set up renovate using the following as a reference.
+
+https://docs.renovatebot.com/getting-started/running/
+
 ## Other solution
 * https://github.com/sue445/terraform-gcp-template
