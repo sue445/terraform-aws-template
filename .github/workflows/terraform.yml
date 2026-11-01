@@ -74,6 +74,7 @@ jobs:
         uses: reviewdog/action-tflint@c332ae72f14fd853c08323a60383b396cc34715a # v1.28.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          tflint_init: true
 
       - name: terraform plan
         id: plan
