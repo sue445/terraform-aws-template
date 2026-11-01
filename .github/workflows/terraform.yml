@@ -33,13 +33,13 @@ jobs:
     environment: ${{ ((github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch') && 'terraform-apply') || '' }}
 
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/checkout@v7.0.1
         with:
           # Make `fetch-depth` larger because the default value(1) causes `git merge-base --is-ancestor origin/main` to fail.
           fetch-depth: 100
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0
+        uses: aws-actions/configure-aws-credentials@v6.3.0
         with:
           role-to-assume: ${{ env.GITHUB_OIDC_PROVIDER_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
@@ -49,7 +49,7 @@ jobs:
           TERRAFORM_VERSION=$(cat .terraform-version)
           echo "TERRAFORM_VERSION=$TERRAFORM_VERSION" >> $GITHUB_ENV
 
-      - uses: hashicorp/setup-terraform@dfe3c3f87815947d99a8997f908cb6525fc44e9e # v4.0.1
+      - uses: hashicorp/setup-terraform@v4.0.1
         with:
           # c.f. https://github.com/hashicorp/terraform/blob/main/CHANGELOG.md
           terraform_version: ${{ env.TERRAFORM_VERSION }}
@@ -71,7 +71,7 @@ jobs:
           exit $ret
 
       - name: tflint
-        uses: reviewdog/action-tflint@c332ae72f14fd853c08323a60383b396cc34715a # v1.28.0
+        uses: reviewdog/action-tflint@v1.28.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           tflint_init: true
@@ -81,7 +81,7 @@ jobs:
         run: terraform plan -input=false -no-color
 
       - name: Post terraform plan report to PullRequest comment
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        uses: actions/github-script@v9.0.0
         if: github.event_name == 'pull_request'
         env:
           PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
@@ -109,7 +109,7 @@ jobs:
             })
 
       - name: Post terraform plan report to Job Summaries
-        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        uses: actions/github-script@v9.0.0
         env:
           PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
         with:
@@ -155,7 +155,7 @@ jobs:
         if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
 
       - name: Slack Notification
-        uses: act10ns/slack@d96404edccc6d6467fc7f8134a420c851b1e9054 # v2.2.0
+        uses: act10ns/slack@v2.2.0
         if: always()
         continue-on-error: true
         with:
