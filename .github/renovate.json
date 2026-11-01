@@ -5,13 +5,19 @@
   ],
   "minimumReleaseAge": "7 days",
   "enabledManagers": [
-    "tflint-plugin"
+    "tflint-plugin",
+    "terraform-version"
   ],
   "packageRules": [
     {
       "matchManagers": ["tflint-plugin"],
       "groupName": "tflint plugins",
       "labels": ["tflint", "dependencies"]
+    },
+    {
+      "matchManagers": ["terraform-version"],
+      "groupName": "Terraform",
+      "labels": ["terraform", "dependencies"]
     }
   ]
 }
