@@ -10,6 +10,7 @@ workflows:
         - 'aws-actions/configure-aws-credentials@v6.3.0'
         - 'hashicorp/setup-terraform@v4.0.1'
         - 'reviewdog/action-tflint@v1.28.0'
+    '.github/workflows/verify-actions-lockfile.yml': []
 dependencies:
     'act10ns/slack@v2.2.0':
         ref: 'v2.2.0'
