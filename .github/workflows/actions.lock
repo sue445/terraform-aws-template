@@ -9,7 +9,7 @@ workflows:
         - 'actions/github-script@v9.0.0'
         - 'aws-actions/configure-aws-credentials@v6.3.0'
         - 'hashicorp/setup-terraform@v4.0.1'
-        - 'reviewdog/action-tflint@v1.28.0'
+        - 'reviewdog/action-tflint@v1.29.0'
     '.github/workflows/verify-actions-lockfile.yml': []
 dependencies:
     'act10ns/slack@v2.2.0':
@@ -37,8 +37,8 @@ dependencies:
         commit: 'sha1-dfe3c3f87815947d99a8997f908cb6525fc44e9e'
         owner_id: 761456
         repo_id: 258271226
-    'reviewdog/action-tflint@v1.28.0':
-        ref: 'v1.28.0'
-        commit: 'sha1-c332ae72f14fd853c08323a60383b396cc34715a'
+    'reviewdog/action-tflint@v1.29.0':
+        ref: 'v1.29.0'
+        commit: 'sha1-8de8f6134bd8068970d7261f6b831964df82b92c'
         owner_id: 48765237
         repo_id: 211132408
